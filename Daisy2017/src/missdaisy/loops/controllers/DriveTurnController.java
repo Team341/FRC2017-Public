@@ -26,6 +26,16 @@ public class DriveTurnController extends SynchronousPID implements Controller {
   private boolean mPIDFromSmartDashboard = true;
   private double mInitError;
   private final double kffw = mMaxMotorOutput / 180;
+  
+  private double kSmallAngleP;
+  private double kSmallAngleI;
+  private double kSmallAngleD;
+  
+  private double kBigAngleP;
+  private double kBigAngleI;
+  private double kBigAngleD;
+  
+  private double kSmallAngleThreshold = 15;
 
   /**
    * Gets the instance of the drive turn controller. Used in order to never have more than one drive
@@ -48,9 +58,16 @@ public class DriveTurnController extends SynchronousPID implements Controller {
     setContinuous(true);
     super.setInputRange(0, 360);
     // super.setOutputRange(-mMaxMotorOutput, mMaxMotorOutput);
-    SmartDashboard.putNumber("DTC_kP", 0.025);
+    SmartDashboard.putNumber("DTC_kP", 0.01231);
     SmartDashboard.putNumber("DTC_kI", 0.000); // 0.02 seems to work for teleop
     SmartDashboard.putNumber("DTC_kD", -0.02);
+    
+    SmartDashboard.putNumber("small angle p", kSmallAngleP);
+    SmartDashboard.putNumber("small angle i", kSmallAngleI);
+    SmartDashboard.putNumber("small angle d", kSmallAngleD);
+    SmartDashboard.putNumber("big angle p", kBigAngleP);
+    SmartDashboard.putNumber("big angle i", kBigAngleI);
+    SmartDashboard.putNumber("big angle d", kBigAngleD);
   }
 
   /**
@@ -61,6 +78,22 @@ public class DriveTurnController extends SynchronousPID implements Controller {
   public synchronized void setGoal(double angle) {
     super.reset();
     mGoal = DaisyMath.boundAngle0to360Degrees(angle);
+    double current = mNavigation.getHeadingInDegrees();
+    double error = DaisyMath.boundAngle0to360Degrees(mGoal - current);
+        
+    kSmallAngleP = SmartDashboard.getNumber("smallanglep", kSmallAngleP);
+    kSmallAngleI = SmartDashboard.getNumber("smallanglei", kSmallAngleI);
+    kSmallAngleD = SmartDashboard.getNumber("smallangled", kSmallAngleD);
+    kBigAngleP = SmartDashboard.getNumber("big angle p", kBigAngleP);
+    kBigAngleI = SmartDashboard.getNumber("big angle i", kBigAngleI);
+    kBigAngleD = SmartDashboard.getNumber("big angle d", kBigAngleD);
+    
+    System.out.println("error!" + error);
+    if (error < kSmallAngleThreshold) {
+      super.setPID(kSmallAngleP, kSmallAngleI, kSmallAngleD);
+    } else {
+      super.setPID(kBigAngleP, kBigAngleI, kBigAngleD);
+    }
     if (Constants.DEBUG_MODE) {
       SmartDashboard.putNumber("DTC_Goal", mGoal);
     }
@@ -68,7 +101,7 @@ public class DriveTurnController extends SynchronousPID implements Controller {
     // the difference between where you are and where you want to be
     // is calculated, and you want that difference to be 0.0.
     setSetpoint(mGoal);
-    loadProperties();
+    //loadProperties();
   }
 
   /**
@@ -80,9 +113,12 @@ public class DriveTurnController extends SynchronousPID implements Controller {
     currentAngle = mNavigation.getHeadingInDegrees();
     // calculate the output for drive motors, based on the difference between
     // where we are and where we want to be
+    
+    
+    
     double cmd = super.calculate(currentAngle);
     double turn =
-        Math.signum(cmd) * Math.max(Math.abs(cmd), Constants.Properties.PID_DRIVE_TURN_MIN_OUTPUT);
+        Math.signum(cmd) * Math.max(Math.abs(cmd), 0);
     // double turn = cmd;
 
     double error = DaisyMath.boundAngle0to360Degrees(mGoal - currentAngle);
@@ -139,10 +175,10 @@ public class DriveTurnController extends SynchronousPID implements Controller {
   @Override
   public void loadProperties() {
     if (mPIDFromSmartDashboard) {
-      double kp = SmartDashboard.getNumber("DTC_kP", 0.1);
+      double kp = SmartDashboard.getNumber("DTC_kP", 0.01231);
       double ki = SmartDashboard.getNumber("DTC_kI", 0.000);
       double kd = SmartDashboard.getNumber("DTC_kD", -0.02);
-      setPID(kp, ki, kd);
+      //setPID(kp, ki, kd);
     } else {
       PropertySet mPropertySet = PropertySet.getInstance();
       double kp = mPropertySet.getDoubleValue("angleTurnKp", 0.1); // .09//0.11
@@ -152,7 +188,7 @@ public class DriveTurnController extends SynchronousPID implements Controller {
           Constants.Properties.PID_DRIVE_TURN_MAX_OUTPUT);
       mMinMotorOutput = mPropertySet.getDoubleValue("turnPIDMinMotorOutput",
           Constants.Properties.PID_DRIVE_TURN_MIN_OUTPUT);
-      setPID(kp, ki, kd);
+      //setPID(kp, ki, kd);
     }
   }
 

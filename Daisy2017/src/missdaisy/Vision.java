@@ -1,5 +1,7 @@
 package missdaisy;
 
+import java.util.TreeMap;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -13,51 +15,67 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Vision {
 
   private static Vision instance = new Vision();
-  private static Block lastBlock;
+  
+  private TreeMap<Double, Double> rangeTable;
+  private double kRangeOffset = 0.0;
+  
+  private Vision() {
+    rangeTable = new TreeMap<Double, Double>();
+    rangeTable.put(80.0, 3700.0);
+    //rangeTable.put(85.0, 3180.0);
+    rangeTable.put(90.0, 3750.0);
+    rangeTable.put(95.0, 3850.0);
+    rangeTable.put(100.0, 4000.0);
+  }
+  
+  public double getRPMsForRange(double range) {
+    double lowKey = -1.0;
+    double lowVal = -1.0;
+    for (double key : rangeTable.keySet()) {
+      if (range < key) {
+        double highVal = rangeTable.get(key);
+        if (lowKey > 0.0) {
+          double m = (range - lowKey) / (key - lowKey);
+          return lowVal + m * (highVal - lowVal);
+        } else
+          return highVal;
+      }
+      lowKey = key;
+      lowVal = rangeTable.get(key);
+    }
+
+    return 3750 + kRangeOffset;
+  }
 
   public static Vision getInstance() {
     return instance;
   }
-
-  public static class Block {
-    public double timeStamp;
-    public double x;
-    public double y;
-    public double width;
-    public double height;
-    public double yaw;
-    public double range;
-  }
-
-  private Vision() {
-    lastBlock = new Block();
-  }
-
+  
   public boolean seesTarget() {
     return SmartDashboard.getBoolean("found", false);
   }
 
   public double getRPM() {
-    return SmartDashboard.getNumber("rpms", 0.0);
+    return getRPMsForRange(getRange());
   }
 
   public double getAzimuth() {
+    /*
+    double camAzimuthDeg = SmartDashboard.getNumber("azimuth", 0.0);
+    double camAzimuthRad = Math.toRadians((90 - camAzimuthDeg));
+    double dist = getRange();
+    double cam_x = dist * Math.cos(camAzimuthRad);
+    double cam_y = dist * Math.cos(camAzimuthRad);
+    
+    double target_x = cam_x + Constants.Physical.CAMERA_X_FROM_SHOOTER_CENTER;
+    double target_y = cam_y + Constants.Physical.CAMERA_Y_FROM_SHOOTER_CENTER;
+    
+    double azimuth = Math.toDegrees(Math.atan2(target_y, target_x));
+    */
     return SmartDashboard.getNumber("azimuth", 0.0);
   }
 
   public double getRange() {
     return SmartDashboard.getNumber("range", 0.0);
-  }
-
-  public double getTime() {
-    return SmartDashboard.getNumber("axis timestamp", 0.0);
-  }
-
-  public Block getBlock() {
-    lastBlock.timeStamp = getTime();
-    lastBlock.yaw = getAzimuth();
-    lastBlock.range = getRange();
-
-    return lastBlock;
   }
 }

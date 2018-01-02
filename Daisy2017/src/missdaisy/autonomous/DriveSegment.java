@@ -2,14 +2,12 @@ package missdaisy.autonomous;
 
 import java.io.File;
 
-import edu.wpi.first.wpilibj.Timer;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import missdaisy.Constants;
 import missdaisy.loops.Navigation;
 import missdaisy.loops.controllers.PathfinderController;
 import missdaisy.subsystems.Drive;
-import missdaisy.subsystems.Shooter;
 
 /**
  * Drive the specified segment of the trajectory
@@ -18,31 +16,27 @@ import missdaisy.subsystems.Shooter;
 
 public class DriveSegment extends State {
   private Drive mDrive;
-  private Shooter mShooter;
   private Navigation mNavigation;
   private PathfinderController mPathfinder;
   private String mFile;
-  private double startTime;
-  private double delay;
   private boolean mDirection;
   private boolean useTurnPID;
-  private boolean spinUpShooter;
 
   /**
-   * @param distance The distance to travel, in say inches.
-   * @param speed A number between -1.0 and 1.0
+   * 
+   * @param filename The relative path of the folder containing the trajectory's .csv and .txt file. 
+   *    Example: "Red/MiddleGear" (without quotes)
+   * @param direction Whether to run this trajectory in forward or reverse. 
+   * @param useTurnPID Should we use our own PID on the heading error?
    */
-  public DriveSegment(String filename, double direction, double useTurnPID, double spinShooter) {
+  public DriveSegment(String filename, double direction, double useTurnPID) {
     super("DriveSegement");
     System.out.println("Creating Drive Segment");
-    mShooter = Shooter.getInstance();
     mDrive = Drive.getInstance();
     mPathfinder = PathfinderController.getInstance();
     mFile = "/home/lvuser/trajectories/" + filename + "/trajectory.csv";
     mDirection = direction < 0.0;
     this.useTurnPID = useTurnPID > 0.0;
-    spinUpShooter = (spinShooter != 0.0);
-    delay = spinShooter;
   }
 
   /**
@@ -67,18 +61,10 @@ public class DriveSegment extends State {
 
     mDrive.setCurrentController(mPathfinder);
     System.out.println("Setting drive controller to pathfinder");
-    
-    startTime = Timer.getFPGATimestamp();
   }
 
   @Override
-  public void running() {
-    /*
-    if(spinUpShooter && (startTime + delay < Timer.getFPGATimestamp())) {
-      mShooter.enableSpeedControlMode(2500);
-    }
-    */
-  }
+  public void running() {}
 
   /**
    * Ensures the robot's drive base is in an expected state.

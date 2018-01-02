@@ -31,7 +31,7 @@ public final class Hanger extends DaisySubsystem {
     mHangerMotor.setInverted(true);
     
     mHangerMotor2 = new Victor(Constants.PWMs.HANGER_MOTOR_2);
-    mHangerMotor2.setInverted(false);
+    mHangerMotor2.setInverted(true);
   }
 
   public void setSpeed(double motorSpeed) {

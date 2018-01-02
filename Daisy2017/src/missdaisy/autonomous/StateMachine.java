@@ -56,7 +56,7 @@ public class StateMachine {
           Drive.getInstance().setOpenLoop();
           Drive.getInstance().setSpeed(0.0, 0.0);
           Shooter.getInstance().setOpenLoop();
-          Shooter.getInstance().setSpeed(0.0);
+          Shooter.getInstance().setPercVoltage(0.0);
         }
       } else {
         mStates[mCurrentState].running();

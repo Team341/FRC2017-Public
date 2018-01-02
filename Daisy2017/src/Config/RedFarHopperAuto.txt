@@ -1,5 +1,0 @@
-TurnTurret -96.0
-OpenBallGate
-RunIntake 0.0
-DriveSegment Red/RightHopperBack -1.0 1.0 1.0
-AutoAimAndShoot 0.0

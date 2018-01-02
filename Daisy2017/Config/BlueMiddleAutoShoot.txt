@@ -1,0 +1,5 @@
+TurnTurret 0
+DriveSegment Red/MiddleGear -1.0 0.0
+DeliverGear
+DriveSegment Blue/MiddleGearShoot 1.0 0.0
+AutoAimAndShoot 0

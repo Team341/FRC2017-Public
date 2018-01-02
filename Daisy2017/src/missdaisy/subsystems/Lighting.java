@@ -1,7 +1,5 @@
 package missdaisy.subsystems;
 
-//import edu.wpi.first.wpilibj.DigitalOutput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.Solenoid;
 import missdaisy.Constants;

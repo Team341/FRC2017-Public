@@ -1,10 +1,10 @@
 package missdaisy.utilities;
 
-import java.util.TreeMap;
 import java.util.Map;
 /*
  * Thanks to 254 for providing this implementation.
  */
+import java.util.TreeMap;
 
 /**
  * Interpolating Tree Maps are used to get values at points that are not defined

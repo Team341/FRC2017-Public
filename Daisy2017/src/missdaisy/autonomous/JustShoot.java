@@ -1,14 +1,10 @@
 package missdaisy.autonomous;
 
-import missdaisy.loops.controllers.ShooterSpeedController;
 import edu.wpi.first.wpilibj.Timer;
-import missdaisy.loops.controllers.AutoAimTurretController;
 import missdaisy.subsystems.Shooter;
-import missdaisy.subsystems.Turret;
 
 public class JustShoot extends State {
 
-  private Turret mTurret;
   private Shooter mShooter;
   private int onTargetCount;
   private double mShootAnywayTime = 1;
@@ -18,7 +14,6 @@ public class JustShoot extends State {
 
   public JustShoot(double angle, double rpm) {
     super("JustShoot");
-    mTurret = Turret.getInstance();
     mShooter = Shooter.getInstance();
     mAngle = angle;
     mRPMS = rpm;
@@ -27,16 +22,15 @@ public class JustShoot extends State {
   @Override
   public void enter() {
     onTargetCount = 0;
-    mTurret.setAngle(mAngle);
     System.out.println("Just Shoot Entered RPMS: " + mRPMS);
-    mShooter.enableSpeedControlMode(mRPMS);
+    mShooter.setRpm(mRPMS);
     stateStartTime = Timer.getFPGATimestamp();
   }
 
   @Override
   public void running() {
-    mShooter.enableSpeedControlMode(mRPMS);
-    if (mTurret.isOnTarget() && mShooter.onTarget()) {
+    mShooter.setRpm(mRPMS);
+    if (mShooter.onTarget()) {
       onTargetCount++;
     }
     if ((onTargetCount > 5 || (mShootAnywayTime + stateStartTime < Timer.getFPGATimestamp()))
@@ -46,7 +40,7 @@ public class JustShoot extends State {
   }
 
   public void exit() {
-    mShooter.setSpeed(0.0);
+    mShooter.setPercVoltage(0.0);
   }
 
   @Override

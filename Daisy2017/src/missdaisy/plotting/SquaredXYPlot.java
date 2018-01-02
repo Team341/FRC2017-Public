@@ -15,6 +15,7 @@ package missdaisy.plotting;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+
 import org.jfree.chart.axis.AxisSpace;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotRenderingInfo;

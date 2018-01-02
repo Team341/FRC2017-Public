@@ -2,6 +2,7 @@ package missdaisy.subsystems;
 
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.TalonControlMode;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -63,12 +64,12 @@ public final class Gearipor extends DaisySubsystem {
 
     //mHookSensor = new DigitalInput(Constants.DigitalInputs.GEARIPOR_HOOK_SENSOR);
     
-    
-    SmartDashboard.putNumber("LeftServoOpenValue", Constants.Properties.GEARIPOR_LEFT_LOADER_SERVO_OPEN);
-    SmartDashboard.putNumber("LeftServoCloseValue", Constants.Properties.GEARIPOR_LEFT_LOADER_SERVO_CLOSED);
-    SmartDashboard.putNumber("RightServoOpenValue", Constants.Properties.GEARIPOR_RIGHT_LOADER_SERVO_OPEN);
-    SmartDashboard.putNumber("RightServoCloseValue", Constants.Properties.GEARIPOR_RIGHT_LOADER_SERVO_CLOSED);
-    
+    if (Constants.DEBUG_MODE) {
+      SmartDashboard.putNumber("LeftServoOpenValue", Constants.Properties.GEARIPOR_LEFT_LOADER_SERVO_OPEN);
+      SmartDashboard.putNumber("LeftServoCloseValue", Constants.Properties.GEARIPOR_LEFT_LOADER_SERVO_CLOSED);
+      SmartDashboard.putNumber("RightServoOpenValue", Constants.Properties.GEARIPOR_RIGHT_LOADER_SERVO_OPEN);
+      SmartDashboard.putNumber("RightServoCloseValue", Constants.Properties.GEARIPOR_RIGHT_LOADER_SERVO_CLOSED);
+    }
   }
 
   public void setPosition(double distFromCenter) {

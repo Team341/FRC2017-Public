@@ -26,7 +26,7 @@ public class ResetHeading extends State {
    */
   @Override
   public void enter() {
-    mNavigation.resetRobotPosition(0.0, 0.0, mAngle);
+    mNavigation.resetRobotPosition(0, 0, mAngle);;
   }
 
   @Override

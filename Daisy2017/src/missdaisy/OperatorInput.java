@@ -1,35 +1,30 @@
 package missdaisy;
 
+import java.io.File;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Pathfinder;
-import jaci.pathfinder.Trajectory;
-import java.io.File;
-
 import missdaisy.Constants.Properties;
 import missdaisy.Constants.TrajectoryFiles;
 import missdaisy.Constants.XBOXController;
 import missdaisy.loops.Navigation;
-import missdaisy.loops.controllers.ShooterSpeedController;
-import missdaisy.loops.controllers.AutoAimTurretController;
+import missdaisy.loops.controllers.AutoAimDriveController;
 import missdaisy.loops.controllers.DriveTurnController;
+import missdaisy.loops.controllers.DriveTurnController2;
 import missdaisy.loops.controllers.PathfinderController;
+import missdaisy.loops.controllers.ShooterSpeedControllerOLD;
+import missdaisy.loops.controllers.ShooterSpeedController;
 import missdaisy.subsystems.Drive;
 import missdaisy.subsystems.Gearipor;
 import missdaisy.subsystems.Hanger;
 import missdaisy.subsystems.Intake;
 import missdaisy.subsystems.Lighting;
 import missdaisy.subsystems.Shooter;
-import missdaisy.subsystems.Turret;
-import missdaisy.tracking.TrackManager;
-import missdaisy.tracking.RobotPose;
-import missdaisy.tracking.Track;
 import missdaisy.utilities.DaisyMath;
-import missdaisy.utilities.InterpolatingDouble;
 import missdaisy.utilities.MovingAverageFilter;
-import missdaisy.utilities.RateLimitFilter;
 import missdaisy.utilities.XboxController;
 
 /**
@@ -49,18 +44,14 @@ public class OperatorInput {
   private Shooter mShooter;
   private Intake mIntake;
   private Hanger mHanger;
-  private Turret mTurret;
   private Gearipor mGearipor;
   private Lighting mLighting;
   private DigitalInput mSensor;
 
   // controllers
   private ShooterSpeedController mAutoAimShooter;
-  private AutoAimTurretController mAutoAimTurret;
+  private AutoAimDriveController mAutoAimDrive;
   private PathfinderController mPathfinder;
-
-  // tracking
-  private TrackManager mTrackManager;
 
   // operator input values
   private double mLeftMotorSpeed;
@@ -98,7 +89,7 @@ public class OperatorInput {
   private boolean mReadyToShoot = false;
   private boolean mResetHeading = true;
   private boolean mIsShooterOnTarget = false;
-  private boolean mIsTurretOnTarget = false;
+  private boolean mIsDriveOnTarget = false;
 
   private double loadGateTimerStart = 0.0;
   private double mStoppedShootingStartTime = 0.0;
@@ -112,7 +103,7 @@ public class OperatorInput {
   private double mStartHangTime = 0.0;
   private boolean hanging = false;
   private MovingAverageFilter seesHookAverage;
-  private RateLimitFilter driveOutputFilter;
+  private int mAutoAimDriveOnTargetCount = 0;
 
   private boolean mArcadeDrive = true;
 
@@ -130,7 +121,6 @@ public class OperatorInput {
     // Instantiate the gamepads
     mDriverController = new XboxController(Constants.XBOXController.DRIVER_PORT);
     mOperatorController = new XboxController(Constants.XBOXController.OPERATOR_PORT);
-    driveOutputFilter = new RateLimitFilter(1.0/20.0);
 
     // Instantiate the subsystems
     mDrive = Drive.getInstance();
@@ -138,7 +128,6 @@ public class OperatorInput {
     mShooter = Shooter.getInstance();
     mIntake = Intake.getInstance();
     mHanger = Hanger.getInstance();
-    mTurret = Turret.getInstance();
     mGearipor = Gearipor.getInstance();
     mLighting = Lighting.getInstance();
     
@@ -146,15 +135,13 @@ public class OperatorInput {
 
     // Instantiate the controllers
     mAutoAimShooter = ShooterSpeedController.getInstance();
-    mAutoAimTurret = AutoAimTurretController.getInstance();
+    mAutoAimDrive = AutoAimDriveController.getInstance();
     mPathfinder = PathfinderController.getInstance();
 
-    // Instantiate the track manager
-    mTrackManager = TrackManager.getInstance();
     seesHookAverage = new MovingAverageFilter(20);
 
     // Populate Smartdashboard with some settable parameters
-    SmartDashboard.putNumber("shooterRPM", 4600);
+    SmartDashboard.putNumber("shooterRPM", 3750);
     SmartDashboard.putNumber("shooterVoltage", 1.0);
     SmartDashboard.putBoolean("Reverse Hanger", false);
     SmartDashboard.putBoolean("EnableShooterTesting", false);
@@ -167,12 +154,11 @@ public class OperatorInput {
     SmartDashboard.putNumber("Turret Desired Angle Wrap Value", 0.0);
 
     SmartDashboard.putBoolean("EnableAutoShift", false);
-
+    
     myTrajectoryFile = new File(Constants.TrajectoryFiles.PATHS[0]);
     SmartDashboard.putString("TrajectorFileName", myTrajectoryFile.getName());
     
     mSensor = new DigitalInput(Constants.DigitalInputs.GEARIPOR_HOOK_SENSOR);
-    
   }
 
   public void processInputs() {
@@ -188,50 +174,20 @@ public class OperatorInput {
       SmartDashboard.putString("TrajectorFileName", myTrajectoryFile.getAbsolutePath());
     }
     
-    /**
-     * Run the tracker so we know where the goal objects are
-     */
-    // mTrackManager.Run();
-    Track bestTrk = mTrackManager.getBestBoilerTrack();
-    if (bestTrk != null) {
-      double trkYawInWF = Math.atan2(bestTrk.getPosition().getY(), bestTrk.getPosition().getX());
-      if (Constants.DEBUG_MODE) {
-        SmartDashboard.putNumber("BestTrack_X", bestTrk.getPosition().getX());
-        SmartDashboard.putNumber("BestTrack_Y", bestTrk.getPosition().getY());
-        SmartDashboard.putNumber("BestTrack_Yaw", Math.toDegrees(trkYawInWF));
-      }
-
-      // Get the current robot pose
-      RobotPose.Pose rPose =
-          RobotPose.getInterpolated(new InterpolatingDouble(Timer.getFPGATimestamp()));
-      if (rPose != null) {
-        double trkYawInRobotFrame =
-            DaisyMath.boundAngleNegPiToPiRadians(trkYawInWF - rPose.driveFrame.getYaw());
-        if (Constants.DEBUG_MODE) {
-          SmartDashboard.putNumber("BestTrack_YawInRobotFrame", Math.toDegrees(trkYawInRobotFrame));
-        }
-      }
-    }
     // Checks if the auto aim is on target
     // as long as the current controllers are the auto aim ones,
     // and they are on target, set mReadyToShoot to true
 
-    /*
-     * mIsAutoAimControllers = mDrive.getCurrentController() == mAutoAimDrive &&
-     * mShooter.getCurrentController() == mAutoAimShooter;
-     * 
-     * mIsAutoAimOnTarget = mAutoAimDrive.onTarget() && mAutoAimShooter.onTarget();
-     * mIsShooterOnTarget = mShooterSpeed.onTarget() && mShooter.getCurrentController() ==
-     * mShooterSpeed;
-     * 
-     * mReadyToShoot = (mIsAutoAimControllers && mIsAutoAimOnTarget) || mIsShooterOnTarget;
-     * SmartDashboard.putBoolean("ReadyToShoot", mReadyToShoot);
-     */
-    mIsShooterOnTarget =
-        mAutoAimShooter.onTarget() && mShooter.getCurrentController() == mAutoAimShooter;
-    mIsTurretOnTarget =
-        mAutoAimTurret.onTarget() && mTurret.getCurrentController() == mAutoAimTurret;
-
+   
+     mIsAutoAimControllers = mDrive.getCurrentController() == mAutoAimDrive &&
+     mShooter.getCurrentController() == mAutoAimShooter;
+     mIsAutoAimOnTarget = mAutoAimDrive.onTarget() && mAutoAimShooter.onTarget();
+     mIsShooterOnTarget = mAutoAimShooter.onTarget();
+     
+     mReadyToShoot = (mIsAutoAimControllers && mIsAutoAimOnTarget) || mIsShooterOnTarget;
+     SmartDashboard.putBoolean("ReadyToShoot", mReadyToShoot);
+     
+   
     //@formatter:off
     /**************************************************************************
      * Driver Inputs:
@@ -251,7 +207,7 @@ public class OperatorInput {
      *
      **************************************************************************/
     //@formatter:on
-
+     
     // Get the inputs for tank drive
     mLeftMotorSpeed =
         -1.0 * DaisyMath.applyDeadband(mDriverController.getLeftYAxis(), XBOXController.DEAD_BAND);
@@ -261,17 +217,9 @@ public class OperatorInput {
 
     // Get the inputs for arcade drive
     mSpeed = mLeftMotorSpeed;
-    
-    if (Math.abs(mSpeed) < XBOXController.DEAD_BAND) {
-      driveOutputFilter.reset();
-    }
-    
-    // limit the rate of change of the output
-    driveOutputFilter.setDesired(mSpeed);
-    mSpeed = driveOutputFilter.run();
-    
     mTurn = Properties.DRIVE_TURN_PERCENTAGE
         * DaisyMath.applyDeadband(mDriverController.getRightXAxis(), XBOXController.DEAD_BAND);
+
 
     // Determine if any drive controllers need to run
     if (mDriverController.getXButton()) {
@@ -279,136 +227,74 @@ public class OperatorInput {
       mDrive.setOpenLoop();
       System.out.println("Canceling current controller");
 
-      mShooter.disableSpeedControlMode();
-      mShooter.setSpeed(0.0);
-    } else if (mDrive.getCurrentController() == DriveTurnController.getInstance() && DriveTurnController.getInstance().onTarget()) {
-      mDrive.setOpenLoop();
-    } else if (mDrive.getCurrentController() == null) {
-
-      // Check if the driver is specifying a controller to run
-      if (mDriverController.getBButton() && !mLastDriverBButtonState) {
-        // Follow a trajectory going forward
-       // mDrive.setCurrentController(DriveTurnController.getInstance());
-        myTrajectoryFile = new File("/home/lvuser/trajectories/Red/SmallBackup/trajectory.csv");
-        Trajectory trajectory = Pathfinder.readFromCSV(myTrajectoryFile);
-        
-        mPathfinder.setTrajectory(trajectory, false);
-        mPathfinder.configureGains(0.5, 0.0, 0.0,
-            1.0 / Constants.Properties.DRIVE_MAX_HIGH_GEAR_VELOCITY, 0.0);
-        mDrive.setCurrentController(PathfinderController.getInstance());
-        /*
-
-        System.out.println("Starting Pathfinder stuff");
-        // Reset the Pathfinder controller
-        // mPathfinder.reset();
-        // mNavigation.resetRobotPosition(0.0, 0.0, 0.0);
-
-        // Follow the trajectory generated by the path editor
-        // File myFile = new File(Constants.TrajectoryFiles.PATHS[2]);
-        Trajectory trajectory = Pathfinder.readFromCSV(myTrajectoryFile);
-
-        // Create the Pathfinder controller and configure it
-        System.out.println("	Setting trajectory to Pathfinder Controller...");
-        mPathfinder.setTrajectory(trajectory, false);
-        // mPathfinder.configureDrive(mNavigation.getLeftEncoderCounts(),
-        // mNavigation.getRightEncoderCounts());
-
-        // Load the Trajectory Following Controller parameters from the smart dashboard
-        double kp = SmartDashboard.getNumber("Traj_kp", 0.25);
-        double ki = SmartDashboard.getNumber("Traj_ki", 0.0);
-        double kd = SmartDashboard.getNumber("Traj_kd", 0.0);
-        double kv = SmartDashboard.getNumber("Traj_kv",
-            1.0 / Constants.Properties.DRIVE_MAX_HIGH_GEAR_VELOCITY);
-        double ka = SmartDashboard.getNumber("Traj_ka", 0.0);
-
-        // Configure the PID/VA gains
-        System.out.println("	Setting gains on trajectory followers...");
-        mPathfinder.configureGains(kp, ki, kd, kv, ka);
-        System.out.println("		kp = " + kp);
-        System.out.println("		ki = " + ki);
-        System.out.println("		kd = " + kd);
-        System.out.println("		kv = " + kv);
-        System.out.println("		ka = " + ka);
-
-        // Set the pathfinder controller to be the active controller
-        System.out.println("	Setting drive controller to Pathfinder controller");
-        mDrive.setCurrentController(PathfinderController.getInstance());
-        */
-
-      } else if (mDriverController.getYButton() && !mLastDriverYButtonState) {
-        // Follow a trajectory going backwards
-
-        System.out.println("Starting Pathfinder stuff");
-        // Reset the Pathfinder controller
-        // mPathfinder.reset();
-        // mNavigation.resetRobotPosition(0.0, 0.0, 0.0);
-
-        // Follow the trajectory generated by the path editor
-        // File myFile = new File(Constants.TrajectoryFiles.PATHS[2]);
-        jaci.pathfinder.Trajectory trajectory = Pathfinder.readFromCSV(myTrajectoryFile);
-
-        // Create the Pathfinder controller and configure it
-        System.out.println("    Setting trajectory to Pathfinder Controller...");
-        mPathfinder.setTrajectory(trajectory, true);
-        // mPathfinder.configureDrive(mNavigation.getLeftEncoderCounts(),
-        // mNavigation.getRightEncoderCounts());
-
-        // Load the Trajectory Following Controller parameters from the smart dashboard
-        double kp = SmartDashboard.getNumber("Traj_kp", 0.25);
-        double ki = SmartDashboard.getNumber("Traj_ki", 0.0);
-        double kd = SmartDashboard.getNumber("Traj_kd", 0.0);
-        double kv = SmartDashboard.getNumber("Traj_kv",
-            1.0 / Constants.Properties.DRIVE_MAX_HIGH_GEAR_VELOCITY);
-        double ka = SmartDashboard.getNumber("Traj_ka", 0.0);
-
-        // Configure the PID/VA gains
-        System.out.println("    Setting gains on trajectory followers...");
-        mPathfinder.configureGains(kp, ki, kd, kv, ka);
-        System.out.println("        kp = " + kp);
-        System.out.println("        ki = " + ki);
-        System.out.println("        kd = " + kd);
-        System.out.println("        kv = " + kv);
-        System.out.println("        ka = " + ka);
-
-        // Set the pathfinder controller to be the active controller
-        System.out.println("    Setting drive controller to Pathfinder controller");
-        mDrive.setCurrentController(PathfinderController.getInstance());
-
-      } else if (mDriverController.getBackButton()) {
-        // mNavigation.resetEncoders();
-        mNavigation.resetRobotPosition(0, 0, 0);
-
+      mShooter.setPercVoltage(0.0);
+    } 
+    if (mDriverController.getLeftTrigger()) {
+      ShooterSpeedController.getInstance().setRpmSetpoint(SmartDashboard.getNumber("shooterRPM", 3750) + RPMSOffset + RPMInitOffset);
+      mDrive.setCurrentController(mAutoAimDrive);
+      mShooter.setCurrentController(mAutoAimShooter);
+      if (mAutoAimDrive.onTarget()) {
+        this.mAutoAimDriveOnTargetCount++;
       } else {
-        // No Drive Controllers selected
-        mDrive.setOpenLoop();
-        DriveTurnController.getInstance().reset();
-        DriveTurnController.getInstance().setGoal(DaisyMath.boundAngle0to360Degrees(Navigation.getInstance().getHeadingInDegrees() + 90.0));
+        this.mAutoAimDriveOnTargetCount = 0;
       }
+      
+      if (this.mAutoAimDriveOnTargetCount > 5) {
+        mDrive.setOpenLoop();
+      }
+      if (mShooter.onTarget() && AutoAimDriveController.getInstance().onTarget()) {
+        mLighting.setHoodLightOn(true);
+      } else {
+        mLighting.setHoodLightOn(false);
+      }
+    } else if (mOperatorController.getLeftTrigger()) {
+        mShooter.setCurrentController(ShooterSpeedController.getInstance());
+        ShooterSpeedController.getInstance().setRpmSetpoint(SmartDashboard.getNumber("shooterRPM", 3750) + RPMSOffset + RPMInitOffset);
+        //mShooter.setRpm(SmartDashboard.getNumber("shooterRPM", 3750) + RPMSOffset + RPMInitOffset);
+        //mShooter.setPercVoltage(1);
+    } else if (mDriverController.getAButton()) {
+      if (!this.mLastDriverAButtonState) {
+        DriveTurnController2.getInstance().setGoal(DaisyMath.boundAngle0to360Degrees(mNavigation.getHeadingInDegrees() + 180));
+      }
+      SmartDashboard.putNumber("DTC_P_GAIN", DriveTurnController2.getInstance().getP());
+      mDrive.setCurrentController(DriveTurnController2.getInstance());
+    } else if (mDriverController.getYButton()) {
+      if (!this.mLastDriverYButtonState) {
+        DriveTurnController2.getInstance().setGoal(DaisyMath.boundAngle0to360Degrees(mNavigation.getHeadingInDegrees() + 10));
+      }
+      SmartDashboard.putNumber("DTC_P_GAIN", DriveTurnController2.getInstance().getP());
 
+      mDrive.setCurrentController(DriveTurnController2.getInstance());
     } else {
-      // Buttons in this branch of the if statement need to be held to remain active
-
+      
+      mShooter.setOpenLoop();
+      ShooterSpeedController.getInstance().reset();
+      mShooter.setPercVoltage(0.0);
+      mDrive.setOpenLoop();
+      mShooter.reset();
+      mAutoAimDrive.reset();
+      this.mAutoAimDriveOnTargetCount = 0;
     }
 
     // Apply the manual controls specified by the driver when no drive controller selected
     if (mDrive.getCurrentController() == null) {
 
       // Speed Shifting logic
-      if (mDriverController.getLeftTrigger()) {
+      if (mDriverController.getBackButton()) {
         // Down shift to low gear
         mDrive.setLowGear();
-      } else if (mDriverController.getRightTrigger()) {
+        SmartDashboard.putBoolean("isHighGear", false);
+      } else if (mDriverController.getStartButton()) {
         // Shift up to high gear
         mDrive.setHighGear();
+        SmartDashboard.putBoolean("isHighGear", true);
       } else {
         // Check if we should auto shift
         boolean allowAutoShift = SmartDashboard.getBoolean("EnableAutoShift", false);
         if (allowAutoShift) {
           // By default we should always be in high gear, however if we hit something going forward
           // or backwards, then shift to low gear to help push through it
-          if (mNavigation.hasForwardCollision()) {
-            mDrive.setLowGear();
-          }
+
 
           /*
            * if (mDrive.autoShiftCheck() && Math.abs(mSpeed) >=
@@ -433,7 +319,11 @@ public class OperatorInput {
       if (mArcadeDrive) {
         mDrive.setSpeedTurn(mSpeed, mTurn);
         if (Math.abs(intakeSpeed) > 0.0) {
-          mIntake.setIntakeSpeed(intakeSpeed);
+          if (intakeSpeed > 0.0) {
+            mIntake.setIntakeSpeed(1.0);
+          } else {
+            mIntake.setIntakeSpeed(-1.0);
+          }
         } else if (mSpeed > 0.0) {
           //mIntake.runIntake();	
           mIntake.setIntakeSpeed(Constants.Properties.INTAKE_PASSIVE_SPEED * (Math.abs(mNavigation.getAverageEncoderRate() / (Constants.Properties.DRIVE_MAX_HIGH_GEAR_VELOCITY * 12))));  
@@ -453,6 +343,9 @@ public class OperatorInput {
         }
       }
     }
+    
+    SmartDashboard.putNumber("Shooter output voltage", mShooter.getVoltage());
+    SmartDashboard.putNumber("Shooter output current", mShooter.getCurrent());
 
     // @formatter:off
     /**********************************************************************
@@ -475,7 +368,17 @@ public class OperatorInput {
      **********************************************************************/
      // @formatter:on
     
-    if (mOperatorController.getYButton()){
+    double fuelLoadingSpeed = -1.0 * DaisyMath.applyDeadband(mOperatorController.getLeftYAxis(), Constants.XBOXController.DEAD_BAND);
+    
+    if (fuelLoadingSpeed < 0.0) {
+      mShooter.setAgitatorSpeed(fuelLoadingSpeed);
+      mShooter.setConveyorSpeed(fuelLoadingSpeed);
+    } else if ((fuelLoadingSpeed > 0.0 || mOperatorController.getYButton()) 
+        && Math.abs(mShooter.getRPM() - 
+            (SmartDashboard.getNumber("shooterRPM", 0.0) + this.RPMInitOffset + this.RPMSOffset)) < 1000 ) {
+      if (mShooter.getCurrentController() == ShooterSpeedController.getInstance() && mStoppedShootingStartTime != -1.0) {
+        ShooterSpeedController.getInstance().notifyShooting();
+      }
       mStoppedShootingStartTime = -1.0;
       mShooter.feedFuel();
       RPMInitOffset = Math.max(RPMInitOffset - 0.5, 0.0);
@@ -484,88 +387,38 @@ public class OperatorInput {
       if (mStoppedShootingStartTime == -1) {
     	  mStoppedShootingStartTime = Timer.getFPGATimestamp();
           mShooter.setConveyorSpeed(-1.0 * Constants.Properties.BALL_CONVEYOR_SPEED);
+          if (mShooter.getCurrentController() == ShooterSpeedController.getInstance()) {
+            ShooterSpeedController.getInstance().notifyStoppedShooting();
+          }
       } else if (Timer.getFPGATimestamp() > mStoppedShootingStartTime + Properties.CONVEYOR_REVERSE_TIME) {
+        if (mOperatorController.getXButton()) {
+          mShooter.setAgitatorSpeed(1.0);
+        } else if (mOperatorController.getBButton()) {
+          mShooter.setAgitatorSpeed(-1.0);
+        } else {
+          mShooter.setAgitatorSpeed(0.0);
           mShooter.stopFeed();
+        }
       }
     }
     if (Constants.DEBUG_MODE) {
       SmartDashboard.putNumber("RPMInitOffset", RPMInitOffset);
     }
 
-    if (mOperatorController.getLeftStickClick() && !this.mLastOperatorLeftStickClick) {
-      this.RPMSOffset += 50;
-    } else if (mOperatorController.getRightStickClick() && !this.mLastOperatorRightStickClick) {
-      this.RPMSOffset -= 50;
-    }
-
-    // Turret Controls
-    if (mOperatorController.getBackButton()) {
-      // For testing/debug, reset the turret angle back to 0.0
-      mTurret.resetAngle();
-    }
     
-    /*
+
     DriverStation.Alliance color;
     color = DriverStation.getInstance().getAlliance();
-    double[] turretAngles = new double[3];
-    if(color == DriverStation.Alliance.Blue){
-    	turretAngles = Constants.Properties.BLUE_TURRET_ANGLES;
-    } else {
-    	turretAngles = Constants.Properties.RED_TURRET_ANGLES;
-    }
-    */
-    
-    
-    if (mOperatorController.getLeftTrigger()) {
-      // Enable the turret auto-aim
-      mTurret.setCurrentController(mAutoAimTurret);
-      //mShooter.enableSpeedControlMode(SmartDashboard.getNumber("shooterRPM", 2000));
-      mAutoAimShooter.setRPMSOffest(RPMSOffset + RPMInitOffset);
-      mShooter.setCurrentController(mAutoAimShooter);
-      if (mShooter.onTarget()) {
-    	mLighting.setHoodLightOn(true);
-      } else {
-    	mLighting.setHoodLightOn(false);
-      }
-    } else if (mOperatorController.getXButton()) {
-    	//mTurret.setAngle(turretAngles[0]);
-      mTurret.setAngle(0.0);
-    } else if (mOperatorController.getAButton()) {
-    	//if (SmartDashboard.getBoolean("EnableShooterTesting", false)){
-    		mShooter.enableSpeedControlMode(SmartDashboard.getNumber("shooterRPM", 2000) + RPMSOffset + RPMInitOffset);
-    	//} else {
-    	//	mTurret.setAngle(turretAngles[1]);
-    	//}
-    } else if (mOperatorController.getBButton()) {
-    	//mTurret.setAngle(turretAngles[2]);
-      mGearipor.openBallGate();
-    } else {
-      mGearipor.closeBallGate();
-      mLighting.setHoodLightOn(false);
-      // Manual control of the turret
-      mTurret.setOpenLoop();
-      mShooter.setOpenLoop();
-      mShooter.disableSpeedControlMode();
 
-      double turretSpeed = DaisyMath.applyDeadband(mOperatorController.getLeftXAxis(), .2);
-      if (mDriverController.getAButton()) {
-    	mTurret.setAngle(SmartDashboard.getNumber("Turret Desired Angle Wrap Value", 0.0));
-      } else {
-        //mTurret.setSpeed(-0.25 * turretSpeed);
-        mTurret.setSpeed(-
-            0.5 * turretSpeed);
-      }
-      mShooter.setSpeed(0.0);
-    }
+    
     SmartDashboard.putNumber("RPMS Offest", RPMSOffset);
     
     
     // Gearipor Controls
     
-    /*
     if (mOperatorController.getRB()) {
       mGearipor.openLoader();
-      //mGearipor.closeBallGate();
+      mGearipor.closeBallGate();
       mLoadGateTimerStart = Timer.getFPGATimestamp();
       // for the rainbow lights
       hanging = false;
@@ -576,20 +429,15 @@ public class OperatorInput {
           + Constants.Properties.GEARIPOR_LOAD_GATE_TIMEOUT)) {
         mGearipor.openLoader();
         if (!mOperatorController.getRightTrigger()) {
-          //mGearipor.openBallGate();
+          mGearipor.openBallGate();
         }
       } else {
         mGearipor.closeLoader();
-        //mGearipor.closeBallGate();
+        mGearipor.closeBallGate();
       }
       // mGearipor.openBallGate();
     }
-    */
-    if (mOperatorController.getRB() && !mOperatorController.getBButton()){
-      mGearipor.closeLoader();
-    } else {
-      mGearipor.openLoader();
-    }
+    
     
     /*
     if (mOperatorController.getRB()) {
@@ -647,7 +495,7 @@ public class OperatorInput {
      * 
      * // Shooter if (mIsShooterOnTarget && mIsTurretOnTarget){ // Both the shooter and turret are
      * on target, start shooting mShooter.feedFuel(); } else if
-     * (mOperatorController.getLeftStickClick()){ mShooter.unjamAgitator(); } else if
+     * (mOperatorController.getLeftStickClick()){ s.unjamAgitator(); } else if
      * (mOperatorController.getYButton() && mShooter.getRPM() >
      * Constants.Properties.SHOOTER_MIN_SHOOTER_RPM){ mShooter.feedFuel(); } else {
      * mShooter.stopFeed(); }
@@ -671,6 +519,12 @@ public class OperatorInput {
       mStartHangTime = 0.0;
       hanging = false;
       //mLighting.setRainbowMode(hanging);
+    }
+    
+    if (mOperatorController.getLeftStickClick() && !this.mLastOperatorLeftStickClick) {
+      this.RPMSOffset += 50;
+    } else if (mOperatorController.getRightStickClick() && !this.mLastOperatorRightStickClick) {
+      this.RPMSOffset -= 50;
     }
     
     hanging = (mStartHangTime > 0.0 && mStartHangTime + 1.0 < Timer.getFPGATimestamp()) || hanging;

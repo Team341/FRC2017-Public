@@ -2,16 +2,17 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/ffmpeg.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/ffmpeg-windows-x86.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/ffmpeg-windows-x86_64.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/javacpp.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/javacv.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/opencv.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/opencv-windows-x86.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/opencv-windows-x86_64.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/WPIJavaCV.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/SmartDashboard.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/WPICameraExtension.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/Documents/GitHub/FRC2017/DaisyCV/DaisyCV_Widget/depends/ffmpeg.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/Documents/GitHub/FRC2017/DaisyCV/DaisyCV_Widget/depends/ffmpeg-windows-x86.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/Documents/GitHub/FRC2017/DaisyCV/DaisyCV_Widget/depends/ffmpeg-windows-x86_64.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/Documents/GitHub/FRC2017/DaisyCV/DaisyCV_Widget/depends/javacpp.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/Documents/GitHub/FRC2017/DaisyCV/DaisyCV_Widget/depends/javacv.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/Documents/GitHub/FRC2017/DaisyCV/DaisyCV_Widget/depends/opencv.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/Documents/GitHub/FRC2017/DaisyCV/DaisyCV_Widget/depends/opencv-windows-x86.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/Documents/GitHub/FRC2017/DaisyCV/DaisyCV_Widget/depends/opencv-windows-x86_64.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/Documents/GitHub/FRC2017/DaisyCV/DaisyCV_Widget/depends/WPIJavaCV.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/Documents/GitHub/FRC2017/DaisyCV/DaisyCV_Widget/depends/WPILib.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/Documents/GitHub/FRC2017/DaisyCV/DaisyCV_Widget/depends/SmartDashboard.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/Documents/GitHub/FRC2017/DaisyCV/WPICameraExtension/depends/WPICameraExtension.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

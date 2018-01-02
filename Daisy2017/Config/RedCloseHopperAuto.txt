@@ -1,0 +1,6 @@
+OpenBallGate
+DriveSegment Red/RightHopperFront -1.0 1.0
+SpinUpShooter 3000
+DriveTime .25 250
+Turn 180
+AutoAimAndShoot 2990.0

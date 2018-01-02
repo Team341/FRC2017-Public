@@ -1,6 +1,5 @@
 package missdaisy.autonomous;
 
-import missdaisy.subsystems.Drive;
 import missdaisy.subsystems.Gearipor;
 
 public class OpenBallGate extends State {

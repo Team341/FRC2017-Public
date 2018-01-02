@@ -1,11 +1,8 @@
 package missdaisy;
 
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.io.File;
-
 import missdaisy.autonomous.AutonomousParser;
 import missdaisy.autonomous.StateMachine;
 import missdaisy.fileio.PropertyReader;
@@ -19,7 +16,6 @@ import missdaisy.subsystems.Hanger;
 import missdaisy.subsystems.Intake;
 import missdaisy.subsystems.Lighting;
 import missdaisy.subsystems.Shooter;
-import missdaisy.subsystems.Turret;
 
 /**
  * The robot. This is the entry point for all functions and threads that are spawned. This class has
@@ -120,10 +116,6 @@ public class Daisy2017 extends IterativeRobot {
 
   @Override
   public void disabledPeriodic() {
-    if (mFastLoopTimer.isLogging()) {
-      mFastLoopTimer.writeLog();
-    }
-    mFastLoopTimer.log(false);
 	setAllianceColor();
 	  
     /*
@@ -132,7 +124,6 @@ public class Daisy2017 extends IterativeRobot {
     Drive.getInstance().setOpenLoop();
     Shooter.getInstance().setOpenLoop();
     Gearipor.getInstance().closeLoader();
-    Turret.getInstance().setOpenLoop();
     Intake.getInstance().stopIntake();
     Hanger.getInstance().holdPosition();
 
@@ -156,7 +147,6 @@ public class Daisy2017 extends IterativeRobot {
     mStateMachine = new StateMachine(
         new AutonomousParser().parseStates(mIsRedSide));
     logToDashboard();
-    mFastLoopTimer.log(true);
   }
 
   /**
@@ -173,7 +163,6 @@ public class Daisy2017 extends IterativeRobot {
 
   @Override
   public void teleopInit() {
-    mFastLoopTimer.log(true);
     setAllianceColor();
     Lighting.getInstance().endLightShow();
     //Lighting.getInstance().setRainbowMode(false);
@@ -271,7 +260,6 @@ public class Daisy2017 extends IterativeRobot {
     Intake.getInstance().logToDashboard();
     Lighting.getInstance().logToDashboard();
     Shooter.getInstance().logToDashboard();
-    Turret.getInstance().logToDashboard();    
   }
 
   /**

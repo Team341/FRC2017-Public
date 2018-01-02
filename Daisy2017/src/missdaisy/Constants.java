@@ -137,9 +137,9 @@ public final class Constants {
   public static final class CAN {
 
     public static final int SHOOTER_TALONSRX_ID = 1;
-    public static final int TURRET_TALONSRX_ID = 2;
+    public static final int SHOOTER_SLAVE_TALONSRX_ID = 2;
     public static final int GEARIPOR_TALONSRX_ID = 3;
-    public static final int PDP_ID = 20;
+    public static final int PDP_ID = 0;
   }
 
   /**
@@ -202,8 +202,8 @@ public final class Constants {
 	  public static final double TURRET_Y_FROM_ROBOT_CENTER = 9; 	// inches, distance left/right of robot center
 	  public static final double TURRET_YAW_OFFSET_ON_STARTUP = Math.toRadians(-90.0);
 	  
-	  public static final double CAMERA_X_FROM_TURRET_CENTER = 3.5; 	// inches, distance forward of turret center
-	  public static final double CAMERA_Y_FROM_TURRET_CENTER = 4.75; 	// inches, distance left/right of turret center
+	  public static final double CAMERA_X_FROM_SHOOTER_CENTER = 0; 	// inches, distance forward of turret center
+	  public static final double CAMERA_Y_FROM_SHOOTER_CENTER = 0; 	// inches, distance left/right of turret center
 	  public static final double CAMERA_YAW_FROM_TURRET = 0.0; 			// rad, angle offset from turret forward direction
 	  public static final double CAMERA_HEIGHT = 21.0;
 	  public static final double CAMERA_PITCH = 31.0;
@@ -244,8 +244,6 @@ public final class Constants {
     public static final double DRIVE_DISTANCE_PER_PULSE = (Math.PI * 4) / 255;
     public static final double DRIVE_WHEEL_DIAMETER = 0.1016; // meters
     public static final int DRIVE_ENCODER_COUNTS_PER_REVOLUTION = 255;
-    
-    public static final double DRIVE_BACKUP_DISTANCE_TIME = 0.5;
 
     // Width between robot drive wheels
     public static final double DRIVE_WIDTH = 0.8382;  //meters
@@ -256,7 +254,7 @@ public final class Constants {
     public static final double DRIVE_COLLISION_DELTA_G_THRESHOLD = 0.5f;
 
 
-    public static final double DEFAULT_SHOOTER_RPM = 3900;
+    public static final double DEFAULT_SHOOTER_RPM = 3750;
     /**
      * Drive PID Parameters
      */
@@ -264,7 +262,7 @@ public final class Constants {
     public static final double PID_DRIVE_DISTANCE_TOLERANCE = .5;
 
     // The acceptable deviation from the setpoint on the drive's turn PID
-    public static final double PID_DRIVE_ANGLE_TOLERANCE = 1.0; // Normally
+    public static final double PID_DRIVE_ANGLE_TOLERANCE = 2.0; // Normally
     // use 0.5
 
     // The maximum output to give to the DriveTurn PID, to aid in the
@@ -302,11 +300,11 @@ public final class Constants {
     public static final double SHOOTER_KA = 0.0;
 
     // The speed the ball agitator should be run at
-    public static final double BALL_AGITATOR_SPEED = 0.4;
+    public static final double BALL_AGITATOR_SPEED = 0.8;
     public static final double BALL_AGITATOR_UNJAM_SPEED = -0.25;
 
     // The speed the ball conveyor should be run at
-    public static final double BALL_CONVEYOR_SPEED = 0.75;
+    public static final double BALL_CONVEYOR_SPEED = .75;
     
     // This is the threshold for the shooter rpms to be considered on target
     public static final double SHOOTER_SPEED_TOLERANCE = 200; //rpm
@@ -319,8 +317,8 @@ public final class Constants {
      */
     public static final double GEARIPOR_RIGHT_LOADER_SERVO_OPEN = 70;
     public static final double GEARIPOR_RIGHT_LOADER_SERVO_CLOSED = 20;
-    public static final double GEARIPOR_LEFT_LOADER_SERVO_OPEN = 60;
-    public static final double GEARIPOR_LEFT_LOADER_SERVO_CLOSED = 110;
+    public static final double GEARIPOR_LEFT_LOADER_SERVO_OPEN = 50;
+    public static final double GEARIPOR_LEFT_LOADER_SERVO_CLOSED = 100;
     
     
     public static final double GEARIPOR_RIGHT_SCORER_SERVO_OPEN = 0;

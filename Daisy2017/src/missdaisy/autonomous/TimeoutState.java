@@ -15,7 +15,7 @@ public class TimeoutState extends State {
    * @param aName The name of the state
    * @param timeout The number of milliseconds to wait until this state is done
    */
-  protected TimeoutState(String aName, int timeout) {
+  public TimeoutState(String aName, int timeout) {
     super(aName);
     mTimeout = timeout;
   }

@@ -11,3 +11,4 @@ Daisy2017/build/*
 Arduino/Daisy2017/*.log
 Daisy2017/build/
 DaisyCV/DaisyCV_StandAlone/out
+DaisyCV/DaisyCV_Widget/depends/.DS_Store

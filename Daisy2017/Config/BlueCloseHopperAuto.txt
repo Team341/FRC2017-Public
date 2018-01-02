@@ -1,0 +1,3 @@
+OpenBallGate
+DriveSegment Blue/LeftHopperFront -1.0 1.0
+AutoAimAndShoot 3290.0

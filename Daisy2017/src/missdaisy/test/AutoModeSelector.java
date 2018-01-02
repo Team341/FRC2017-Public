@@ -1,6 +1,7 @@
 package missdaisy.test;
 
 import java.util.Scanner;
+
 import missdaisy.autonomous.AutonomousParser;
 import missdaisy.autonomous.StateMachine;
 import missdaisy.fileio.PropertyReader;

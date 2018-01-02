@@ -1,7 +1,5 @@
 package missdaisy.autonomous;
 
-import missdaisy.subsystems.Drive;
-import missdaisy.subsystems.Gearipor;
 import missdaisy.subsystems.Intake;
 
 public class RunIntake extends TimeoutState{

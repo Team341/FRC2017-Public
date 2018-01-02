@@ -1,10 +1,11 @@
 package missdaisy.test;
 
+import java.io.File;
+
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
-import java.io.File;
 
 
 /**
