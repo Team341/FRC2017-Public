@@ -1,0 +1,13 @@
+distanceKp 0.5
+distanceKi 0.0
+distanceKd 0.0
+distanceKv 0.1
+distanceKa 0.0
+distanceTolerance 1
+turnKp 0.01
+turnKi 0.0
+turnKd 0.0
+turnKv 0.1
+turnKa 0.0
+angleTolerance 0.5
+angleKp 0.5

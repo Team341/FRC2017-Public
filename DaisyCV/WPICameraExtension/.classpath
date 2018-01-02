@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="depends/javacpp.jar"/>
+	<classpathentry kind="lib" path="depends/javacv.jar"/>
+	<classpathentry kind="lib" path="depends/NetworkTables-3.0.0-20160107.180902-2-desktop.jar"/>
+	<classpathentry kind="lib" path="depends/opencv-windows-x86_64.jar"/>
+	<classpathentry kind="lib" path="depends/opencv-windows-x86.jar"/>
+	<classpathentry kind="lib" path="depends/opencv.jar"/>
+	<classpathentry kind="lib" path="depends/SmartDashboard.jar"/>
+	<classpathentry kind="lib" path="depends/WPICameraExtension.jar"/>
+	<classpathentry kind="lib" path="depends/WPIJavaCV.jar"/>
+	<classpathentry kind="lib" path="depends/WPILib.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

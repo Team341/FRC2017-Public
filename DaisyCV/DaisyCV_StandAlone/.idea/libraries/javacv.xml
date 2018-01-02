@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="javacv">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/javacv/opencv.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/javacv/javacv.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/javacv/opencv-windows-x86_64.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/javacv/opencv-windows-x86.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/javacv/javacpp.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

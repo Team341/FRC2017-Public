@@ -1,0 +1,5 @@
+DriveSegment "Blue\\MiddleGear" 1.0
+DeliverGear
+DriveSegment "Blue\\MiddleGearToKey" -1.0
+AutoAimAndShoot
+DriveSegment "Blue\\KeyToCrossBaseline" 1.0

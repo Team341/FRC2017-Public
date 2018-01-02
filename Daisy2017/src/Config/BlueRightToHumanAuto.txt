@@ -1,0 +1,4 @@
+DriveSegment Blue/RightSideGear -1.0 1.0
+DeliverGear
+DriveSegment Blue/RightSideGearToHumanLoader 1.0 0.0
+TurnToAngle 0.0

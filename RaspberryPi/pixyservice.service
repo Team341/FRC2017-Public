@@ -1,0 +1,10 @@
+[Unit]
+Decription=Pixy NetworkTables Service
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python /home/pi/pixy/build/libpixyusb_swig/get_blocks.py
+
+[Install]
+WantedBy=multi-user.target

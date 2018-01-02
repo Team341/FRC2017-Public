@@ -1,0 +1,6 @@
+TurnTurret 96.0
+OpenBallGate
+DriveSegment Blue/HopperPart1 -1.0 1.0
+TurnToAngle -90.0
+DriveSegment Blue/HopperPart2 -1.0 1.0
+AutoAimAndShoot 3200.0

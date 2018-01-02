@@ -1,0 +1,6 @@
+TurnTurret 90.0
+DriveSegment Red/RightSideGear -1.0 1.0
+DeliverGear
+DriveSegment Red/RightGearReverse 1.0 0.0
+DriveSegment Red/RightGearFancy -1.0 1.0
+AutoAimAndShoot 0.0

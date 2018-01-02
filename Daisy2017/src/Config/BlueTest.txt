@@ -1,0 +1,3 @@
+DriveSegment Blue/LeftHopperToFarLeftHopper -1.0 1.0
+DeliverGear
+DriveSegment Blue/LeftHopperToFarLeftHopper 1.0 0.0

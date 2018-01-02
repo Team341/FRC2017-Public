@@ -1,0 +1,5 @@
+DriveSegment Red/MiddleGear 1.0
+DeliverGear
+DriveSegment Red/MiddleGearToKey -1.0
+AutoAimAndShoot
+DriveSegment Red/KeyToCrossBaseline 1.0

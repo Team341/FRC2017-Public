@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="WPI">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/WPI/WPIJavaCV.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/WPI/NetworkTables-3.0.0-20160107.180902-2-desktop.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/WPI/WPILib.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

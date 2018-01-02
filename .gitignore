@@ -1,0 +1,13 @@
+/bin/
+/build/
+/dist/
+sysProps.xml
+/.idea/
+*.iml
+/out/
+/out/copy.sh.save
+src/pixy/PixyTest.java
+Daisy2017/build/*
+Arduino/Daisy2017/*.log
+Daisy2017/build/
+DaisyCV/DaisyCV_StandAlone/out

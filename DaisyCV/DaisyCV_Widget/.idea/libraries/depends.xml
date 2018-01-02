@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="depends">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/depends/WPICameraExtension.jar!/" />
+      <root url="jar://$PROJECT_DIR$/depends/javacv.jar!/" />
+      <root url="jar://$PROJECT_DIR$/depends/WPIJavaCV.jar!/" />
+      <root url="jar://$PROJECT_DIR$/depends/SmartDashboard.jar!/" />
+      <root url="jar://$PROJECT_DIR$/depends/javacpp.jar!/" />
+      <root url="jar://$PROJECT_DIR$/depends/WPILib.jar!/" />
+      <root url="jar://$PROJECT_DIR$/depends/opencv.jar!/" />
+      <root url="jar://$PROJECT_DIR$/depends/opencv-windows-x86_64.jar!/" />
+      <root url="jar://$PROJECT_DIR$/depends/opencv-windows-x86.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

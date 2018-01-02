@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/ffmpeg.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/ffmpeg-windows-x86.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/ffmpeg-windows-x86_64.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/javacpp.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/javacv.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/opencv.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/opencv-windows-x86.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/opencv-windows-x86_64.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Miss Daisy/SmartDashboard/extensions/lib/WPIJavaCV.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

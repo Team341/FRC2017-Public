@@ -1,0 +1,6 @@
+TurnTurret -90.0
+DriveSegment Blue/LeftSideGear -1.0 1.0
+DeliverGear
+RunIntake 1.0
+DriveSegment Blue/LeftGearToNearHopper 1.0 0.0 0.5
+AutoAimAndShoot 3000.0

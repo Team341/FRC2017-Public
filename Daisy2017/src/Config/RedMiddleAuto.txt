@@ -1,0 +1,5 @@
+TurnTurret -88.0
+DriveSegment Red/MiddleGear -1.0 0.0
+DeliverGear
+DriveSegment Red/MiddleGear 1.0 0.0
+JustShoot -88.0 3850.0

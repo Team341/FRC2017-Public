@@ -1,0 +1,7 @@
+Mode 0
+HueLowerBound 38
+HueUpperBound 255
+SaturationLowerBound 98
+SaturationUpperBound 255
+ValueLowerBound 121
+ValueUpperBound 255

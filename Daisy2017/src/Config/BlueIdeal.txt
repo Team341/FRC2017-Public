@@ -1,0 +1,3 @@
+DriveSegment "Blue\\LeftSideGear" 1.0
+DeliverGear
+DriveSegment "Blue\\LeftGearToHopper" -1.0

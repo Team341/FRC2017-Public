@@ -1,2 +1,2 @@
-# FRC2017-Public
-This is the public release of Team 341's 2017 FRC robot code
+# FRC2017
+FRC Team 341 code for the 2017 game STEAMWorks

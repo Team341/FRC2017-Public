@@ -1,0 +1,11 @@
+HERMITE_CUBIC
+Basic
+true
+in
+ft/s
+deg
+16, 20, 64
+31, 23.5
+2
+0.0, 0.0, 0.0
+4.0, 0.0, 0.0
